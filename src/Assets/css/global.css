@@ -61,3 +61,35 @@
       font-size: 62.5%;
     }
   }
+
+  .btn-link{
+    font-weight: 400;
+    color: white;
+    text-decoration: none;
+    background-color: transparent;
+    border: 1px solid transparent;
+    outline:none;
+  }
+  .btn-link:hover{
+    color:#E6E6F0
+  }
+
+.btn-success{
+    font-size: 1.5rem;
+    height: 5rem;
+    width: 16rem;
+    border-radius: 5px;
+    color: white;
+    font:700 1.5rem Archivo;
+    border: none;
+    background:var(--color-secundary);
+    outline:none;
+}
+
+.btn-success:hover{
+    background:var(--color-secundary-dark);
+}
+.btn-success svg {
+    margin-right: 1rem;
+    width: 2rem;
+}

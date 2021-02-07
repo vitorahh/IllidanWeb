@@ -1,57 +1,99 @@
-import React from 'react';
-import { Link } from 'react-router-dom'
+import React, { useEffect, useState } from 'react';
 
 import { Dropdown } from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css'
+import { useForm } from "react-hook-form";
 
-import ArthasLogo from '../../../Assets/img/Person/ArthasLogo.jpg'
-import IllidanLogo from '../../../Assets/img/Person/IllidanLogo.jpg'
-import RegisterIcon from '../../../Assets/img/icons/edit.svg'
+//Components
+import { AlertSuccess } from '../../../Services/SweetAlerts/Alerts';
 
-import {propsForm} from '../InterfaceLogin';
+//Controllers
+import { DropDownPersonagens } from '../../../Controllers/Personagens/PersonagensController'
+import { registerUser } from '../../../Controllers/Login/LoginControllers';
 
-import './styles.css'
+//Fonts Icons
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUserPlus } from '@fortawesome/free-solid-svg-icons';
+
+//Configuração de Componente
+import {propsForm} from '../InterfaceStateLogin';
 
 function RegisterForm(props:propsForm){
+  
+    const [DropdownPerson, setDropdownPerson] = useState<Array<object>>([])
 
-    const friendOptions = [
-        {
-          key: '1',
-          text: 'Arthas Menethil',
-          value: '1',
-          image: { avatar: true, src: ArthasLogo },
-        },
-        {
-          key: '2',
-          text: 'Illidan Tempesfuria',
-          value: '2',
-          image: { avatar: true, src: IllidanLogo },
+    useEffect(() => {
+        const listar = DropDownPersonagens();
+        setDropdownPerson(listar);
+    },[]);
+
+    //Formulario
+    const { register, handleSubmit } = useForm();
+    const [idPersonagem, setIdPersonagem] = useState('')
+
+    const handleDropdown = (event: any,data:any) => {
+        setIdPersonagem(data.value);
+    };
+
+    const onSubmit = async (data:any) => {
+        const user = {
+            user:data.user,
+            username: data.username,
+            password:data.password,
+            passwordConfirm:data.passwordConfirm,
+            idPersonagem: parseInt(idPersonagem) 
         }
-      ]
-
+        const idUser = await registerUser(user)
+        if(idUser > 0){
+            AlertSuccess("Cadastro Efetuado com Sucesso!");
+            props.status(true)
+        }
+            
+    } 
     return (
-            <form id="Register-Illidan"className="LoginSuperNova" action="">
+            <form id="Register-Illidan" className="LoginSuperNova" onSubmit={handleSubmit(onSubmit)}>
                 <div className="input-block">
-                    <input type="text" className="usuario" placeholder="Nome"/>
-                    <input type="text" className="usuario" placeholder="Usuario"/>
-                    <input type="password" className="Senha"placeholder="Senha"/>
-                    <input type="password" className="Senha"placeholder="Confirma senha"/>
+                    <input type="text" 
+                        className="usuario" 
+                        placeholder="Nome"
+                        autoComplete="off"
+                        name="user" 
+                        ref={register} />
+                    <input type="text" 
+                        className="usuario" 
+                        placeholder="Usuario"
+                        autoComplete="off"
+                        name="username" 
+                        ref={register} />
+                    <input type="password" 
+                        className="Senha"
+                        placeholder="Senha"
+                        autoComplete="off"
+                        name="password" 
+                        ref={register} />
+                    <input type="password" 
+                        className="Senha"
+                        placeholder="Confirma senha"
+                        name="passwordConfirm" 
+                        autoComplete="off"
+                        ref={register} />
                     <Dropdown
                         placeholder='Selecione um Personagem'
                         fluid
                         className="dropdownPerson"
                         selection
-                        options={friendOptions}
+                        options={DropdownPerson}
+                        onChange={handleDropdown}
                     />
                 </div>
                 <div className="button-container">
-                    <Link to="#" className="cadastrar" onClick={() => props.status(true)}>
+                    <button className="btn-link" onClick={() => props.status(true)}>
                         Voltar
-                    </Link>
-                    <Link to="/Home" className="login">
-                        <img src={RegisterIcon} alt="Cadastrar"/>
+                    </button>
+                    <button className="btn-success" type="submit">
+                        <FontAwesomeIcon icon={faUserPlus} />
                         Cadastrar
-                    </Link>
+                    </button>
                 </div>
             </form>
     )
